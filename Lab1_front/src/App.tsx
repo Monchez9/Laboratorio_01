@@ -4,7 +4,7 @@ import './App.css';
 
 type Message = { id: number; message: string };
 
-const API = 'http://localhost:3000';
+const API = 'http://localhost:3000/msg';
 
 function App() {
   const [messages, setMessages] = useState<Message[]>([]);

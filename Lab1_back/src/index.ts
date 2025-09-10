@@ -1,6 +1,6 @@
 import express from 'express';
 import type { Request, Response } from 'express';
-
+import cors from 'cors';
 import { promises as fs } from 'fs';
 import path from 'path';
 
@@ -13,6 +13,7 @@ const PORT = process.env['PORT'] ? Number(process.env['PORT']) : 3000;
 const DATA_DIR = path.join(process.cwd(), 'data');
 const DATA_FILE = path.join(DATA_DIR, 'messages.json');
 
+app.use(cors());
 app.use(express.json());
 
 // --------- Utilidades de almacenamiento ----------

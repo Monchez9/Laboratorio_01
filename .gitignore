@@ -5,6 +5,7 @@ node_modules/
 **/dist/
 **/build/
 **/report/
+**/coverage/
 
 # Ignore logs
 *.log
@@ -20,3 +21,5 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+
+coverage
