@@ -1,17 +1,17 @@
-import express from "express";
-import type { Request, Response } from "express";
+import express from 'express';
+import type { Request, Response } from 'express';
 
-import { promises as fs } from "fs";
-import path from "path";
+import { promises as fs } from 'fs';
+import path from 'path';
 
 // --------- Tipos y rutas de archivo ----------
 type Message = { id: number; message: string };
 
 const app = express();
-const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
+const PORT = process.env['PORT'] ? Number(process.env['PORT']) : 3000;
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const DATA_FILE = path.join(DATA_DIR, "messages.json");
+const DATA_DIR = path.join(process.cwd(), 'data');
+const DATA_FILE = path.join(DATA_DIR, 'messages.json');
 
 app.use(express.json());
 
@@ -22,24 +22,24 @@ async function ensureStore(): Promise<void> {
     await fs.access(DATA_FILE);
   } catch {
     // Si no existe, lo creamos con un arreglo vacío
-    await fs.writeFile(DATA_FILE, "[]", "utf-8");
+    await fs.writeFile(DATA_FILE, '[]', 'utf-8');
   }
 }
 
 async function readStore(): Promise<Message[]> {
   await ensureStore();
-  const raw = await fs.readFile(DATA_FILE, "utf-8");
+  const raw = await fs.readFile(DATA_FILE, 'utf-8');
   try {
     return JSON.parse(raw) as Message[];
   } catch {
     // Si el JSON está corrupto, lo re-inicializamos
-    await fs.writeFile(DATA_FILE, "[]", "utf-8");
+    await fs.writeFile(DATA_FILE, '[]', 'utf-8');
     return [];
   }
 }
 
 async function writeStore(data: Message[]): Promise<void> {
-  await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
+  await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2), 'utf-8');
 }
 
 function nextId(items: Message[]): number {
@@ -48,22 +48,22 @@ function nextId(items: Message[]): number {
 }
 
 // --------- Rutas ----------
-app.get("/", (_req: Request, res: Response) => {
-  res.send("Lab 1");
+app.get('/', (_req: Request, res: Response) => {
+  res.send('Lab 1');
 });
 
 // Listar todos (opcional pero útil)
-app.get("/msg", async (_req: Request, res: Response) => {
+app.get('/msg', async (_req: Request, res: Response) => {
   const messages = await readStore();
   res.json(messages);
 });
 
 // Crear mensaje
-app.post("/msg", async (req: Request, res: Response) => {
+app.post('/msg', async (req: Request, res: Response) => {
   const { message } = req.body;
 
-  if (typeof message !== "string" || message.trim() === "") {
-    return res.status(400).json({ error: "Empty message" });
+  if (typeof message !== 'string' || message.trim() === '') {
+    return res.status(400).json({ error: 'Empty message' });
   }
 
   const messages = await readStore();
@@ -75,30 +75,30 @@ app.post("/msg", async (req: Request, res: Response) => {
 });
 
 // Obtener uno por id
-app.get("/msg/:id", async (req: Request, res: Response) => {
-  const id = Number(req.params.id);
+app.get('/msg/:id', async (req: Request, res: Response) => {
+  const id = Number(req.params['id']);
   const messages = await readStore();
   const msg = messages.find((m) => m.id === id);
 
-  if (!msg) return res.status(404).json({ error: "Message not found" });
+  if (!msg) return res.status(404).json({ error: 'Message not found' });
   res.json(msg);
 });
 
 // Actualizar por id
-app.put("/msg/:id", async (req: Request, res: Response) => {
-  const id = Number(req.params.id);
+app.put('/msg/:id', async (req: Request, res: Response) => {
+  const id = Number(req.params['id']);
   const { message } = req.body;
 
-  if (typeof message !== "string" || message.trim() === "") {
-    return res.status(400).json({ error: "Empty message" });
+  if (typeof message !== 'string' || message.trim() === '') {
+    return res.status(400).json({ error: 'Empty message' });
   }
 
   const messages = await readStore();
   const idx = messages.findIndex((m) => m.id === id);
-  if (idx === -1) return res.status(404).json({ error: "Message not found" });
+  if (idx === -1) return res.status(404).json({ error: 'Message not found' });
 
   if (idx === -1) {
-    return res.status(404).json({ error: "Message not found" });
+    return res.status(404).json({ error: 'Message not found' });
   }
 
   messages[idx]!.message = message.trim();
@@ -109,19 +109,24 @@ app.put("/msg/:id", async (req: Request, res: Response) => {
 });
 
 // Eliminar por id
-app.delete("/msg/:id", async (req: Request, res: Response) => {
-  const id = Number(req.params.id);
+app.delete('/msg/:id', async (req: Request, res: Response) => {
+  const id = Number(req.params['id']);
   const messages = await readStore();
   const exists = messages.some((m) => m.id === id);
 
-  if (!exists) return res.status(404).json({ error: "Message not found" });
+  if (!exists) return res.status(404).json({ error: 'Message not found' });
 
   const filtered = messages.filter((m) => m.id !== id);
   await writeStore(filtered);
 
-  res.json({ message: "Deleted successfully" });
+  res.json({ message: 'Deleted successfully' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Servidor Express escuchando en http://localhost:${PORT}`);
-});
+// Solo arrancar el server si NO es test
+if (process.env['NODE_ENV'] !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`Servidor en http://localhost:${PORT}`);
+  });
+}
+
+export default app;
