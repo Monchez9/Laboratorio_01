@@ -1,5 +1,4 @@
 {
-  // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
     // File Layout
     "rootDir": "./src",
@@ -12,13 +11,12 @@
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
-
+    "esModuleInterop": true,
     // Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
 
     // Style Options
-    "noImplicitReturns": true,
     "noImplicitOverride": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -33,5 +31,19 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true
-  }
+  },
+
+
+  "include": ["src/**/*.ts"],
+
+
+  "exclude": [
+    "node_modules",
+    "dist",
+    "eslint.config.ts",
+    "**/*.config.ts",
+    "**/*.config.mts",
+    "**/*.config.js",
+    "**/*.config.cjs"
+  ]
 }

@@ -7,6 +7,7 @@ export default defineConfig([
   {
     ignores: [
       'node_modules',
+      'jest.config.cjs',
       'dist',
       'build',
       'coverage',

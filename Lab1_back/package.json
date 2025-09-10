@@ -5,10 +5,12 @@
   "main": "index.ts",
   "module": "commonjs",
   "scripts": {
-    "dev": "nodemon",
+    "dev": "nodemon --watch src --ext ts,json --exec ts-node --esm ./src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "test": "jest --passWithNoTests",
+    "test": "cross-env NODE_ENV=test jest",
+    "test:watch": "cross-env NODE_ENV=test jest --watch",
+    "coverage": "cross-env NODE_ENV=test jest --coverage",
     "lint": "eslint .",
     "lint:report": "eslint . -f json -o reports/eslint-report.json",
     "lint:report-html": "eslint . --ext .ts,.js -f html -o reports/eslint-report.html"
@@ -22,12 +24,15 @@
     "jiti": "^2.5.1"
   },
   "devDependencies": {
+    "@swc/core": "^1.13.5",
+    "@swc/jest": "^0.2.39",
     "@types/express": "^5.0.3",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.3.1",
     "@types/supertest": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^8.43.0",
     "@typescript-eslint/parser": "^8.43.0",
+    "cross-env": "^10.0.0",
     "eslint": "^9.35.0",
     "eslint-formatter-html": "^2.7.3",
     "globals": "^16.4.0",

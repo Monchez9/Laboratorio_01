@@ -47,23 +47,32 @@ function nextId(items: Message[]): number {
   return max + 1;
 }
 
+// --------- Helper de validación ----------
+function parseId(raw: string | undefined): number | null {
+  const n = Number(raw);
+  if (!Number.isFinite(n) || !Number.isInteger(n) || n <= 0) return null;
+  return n;
+}
+
 // --------- Rutas ----------
 app.get('/', (_req: Request, res: Response) => {
   res.send('Lab 1');
 });
 
 // Listar todos (opcional pero útil)
-app.get('/msg', async (_req: Request, res: Response) => {
+app.get('/msg', async (_req: Request, res: Response): Promise<void> => {
   const messages = await readStore();
   res.json(messages);
+  return;
 });
 
 // Crear mensaje
-app.post('/msg', async (req: Request, res: Response) => {
+app.post('/msg', async (req: Request, res: Response): Promise<void> => {
   const { message } = req.body;
 
   if (typeof message !== 'string' || message.trim() === '') {
-    return res.status(400).json({ error: 'Empty message' });
+    res.status(400).json({ error: 'Empty message' });
+    return;
   }
 
   const messages = await readStore();
@@ -72,54 +81,76 @@ app.post('/msg', async (req: Request, res: Response) => {
   await writeStore(messages);
 
   res.status(201).json(newMsg);
+  return;
 });
 
 // Obtener uno por id
-app.get('/msg/:id', async (req: Request, res: Response) => {
-  const id = Number(req.params['id']);
+app.get('/msg/:id', async (req: Request, res: Response): Promise<void> => {
+  const id = parseId(req.params['id']);
+  if (id === null) {
+    res.status(400).json({ error: 'Invalid id' });
+    return;
+  }
+
   const messages = await readStore();
   const msg = messages.find((m) => m.id === id);
 
-  if (!msg) return res.status(404).json({ error: 'Message not found' });
+  if (!msg) {
+    res.status(404).json({ error: 'Message not found' });
+    return;
+  }
   res.json(msg);
+  return;
 });
 
 // Actualizar por id
-app.put('/msg/:id', async (req: Request, res: Response) => {
-  const id = Number(req.params['id']);
+app.put('/msg/:id', async (req: Request, res: Response): Promise<void> => {
+  const id = parseId(req.params['id']);
   const { message } = req.body;
 
+  if (id === null) {
+    res.status(400).json({ error: 'Invalid id' });
+    return;
+  }
   if (typeof message !== 'string' || message.trim() === '') {
-    return res.status(400).json({ error: 'Empty message' });
+    res.status(400).json({ error: 'Empty message' });
+    return;
   }
 
   const messages = await readStore();
   const idx = messages.findIndex((m) => m.id === id);
-  if (idx === -1) return res.status(404).json({ error: 'Message not found' });
-
   if (idx === -1) {
-    return res.status(404).json({ error: 'Message not found' });
+    res.status(404).json({ error: 'Message not found' });
+    return;
   }
 
   messages[idx]!.message = message.trim();
   await writeStore(messages);
   res.json(messages[idx]);
-
-  res.json(messages[idx]);
+  return;
 });
 
 // Eliminar por id
-app.delete('/msg/:id', async (req: Request, res: Response) => {
-  const id = Number(req.params['id']);
+app.delete('/msg/:id', async (req: Request, res: Response): Promise<void> => {
+  const id = parseId(req.params['id']);
+  if (id === null) {
+    res.status(400).json({ error: 'Invalid id' });
+    return;
+  }
+
   const messages = await readStore();
   const exists = messages.some((m) => m.id === id);
 
-  if (!exists) return res.status(404).json({ error: 'Message not found' });
+  if (!exists) {
+    res.status(404).json({ error: 'Message not found' });
+    return;
+  }
 
   const filtered = messages.filter((m) => m.id !== id);
   await writeStore(filtered);
 
   res.json({ message: 'Deleted successfully' });
+  return;
 });
 
 // Solo arrancar el server si NO es test
