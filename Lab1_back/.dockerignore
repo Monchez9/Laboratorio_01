@@ -1,24 +1,12 @@
+# === NO excluir código ni configs necesarias ===
+# Archivos grandes/irrelevantes para el build:
 node_modules
-
-*.log
-*.tsbuildinfo
-eslint.config.ts
-jest.config.js
-tsconfig.json
-
-src/
-tests/
-
-reports/
-coverage/
-dist/
-
-.DS_Store
-.vscode/
-.idea/
-.env
-.env.local
-.env.test
-
+dist
+coverage
 .git
 .gitignore
+npm-debug.log
+*.log
+
+# (Opcional) si no los usas dentro del build:
+reports
