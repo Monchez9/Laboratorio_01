@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lab1-back
+  namespace: staging
+  labels:
+    app: lab1-back
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lab1-back
+  template:
+    metadata:
+      labels:
+        app: lab1-back
+    spec:
+      containers:
+        - name: lab1-back
+          image: lab1cicd.azurecr.io/lab1-back:dev
+          ports:
+            - containerPort: 3000
+          # Probes opcionales (tu app no expone /health; dejamos TCP)
+          readinessProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"

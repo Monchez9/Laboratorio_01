@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: lab1-back
+  namespace: staging
+  labels:
+    app: lab1-back
+spec:
+  type: LoadBalancer
+  selector:
+    app: lab1-back
+  ports:
+    - name: http
+      port: 80        # puerto público
+      targetPort: 3000 # puerto del contenedor
