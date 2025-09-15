@@ -157,7 +157,7 @@ app.delete('/msg/:id', async (req: Request, res: Response): Promise<void> => {
 // Solo arrancar el server si NO es test
 if (process.env['NODE_ENV'] !== 'test') {
   app.listen(PORT, () => {
-    console.log(`Servidor en http://localhost:${PORT}`);
+    // console.log(`Servidor en http://localhost:${PORT}`);
   });
 }
 

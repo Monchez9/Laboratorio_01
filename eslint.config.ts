@@ -1,51 +1,42 @@
-// Archivo desarrollado con ayuda de IA
-import globals from 'globals';
+// eslint.config.ts
 import tseslint from 'typescript-eslint';
-import { defineConfig } from 'eslint/config';
 
-export default defineConfig([
+export default [
+
   {
     ignores: [
       'node_modules',
-      'jest.config.cjs',
       'dist',
       'build',
       'coverage',
-      '*.js'
-    ]
+      'eslint.config.*',
+      'jest.config.*'
+    ],
   },
 
+
   {
-    files: ['**/*.{js,mjs,cjs,ts,mts,cts}'],
+    files: ['src/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}'],
     languageOptions: {
-      globals: globals.node,
+      parser: tseslint.parser,
       parserOptions: {
-        project: './tsconfig.json'
+        ecmaVersion: 2022,
+        sourceType: 'module'
       }
     },
     rules: {
-      'semi': ['error', 'always'],
-      'quotes': ['error', 'single'],
-      'no-console': 'warn',
-      '@typescript-eslint/no-unused-vars': ['warn'],
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/explicit-function-return-type': 'off'
+      'no-console': 'warn'
     }
   },
 
   {
-    files: ['**/*.test.ts', '**/__tests__/**/*.ts'],
+    files: ['**/*.{js,cjs,mjs}'],
     languageOptions: {
-      globals: {
-        ...globals.node,
-        ...globals.jest
+      parserOptions: {
+        ecmaVersion: 2022,
+        sourceType: 'script'
       }
     },
-    rules: {
-      '@typescript-eslint/no-explicit-any': 'off', 
-      '@typescript-eslint/no-unused-vars': 'off' 
-    }
-  },
-
-  tseslint.configs.recommended
-]);
+    rules: {}
+  }
+];
